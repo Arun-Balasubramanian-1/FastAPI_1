@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from typing import List, Optional
 
 app = FastAPI()
 
@@ -8,11 +9,15 @@ async def say_hello():
 
 
 BOOKS = [
-    { "author": "JK Rowling", "book_name": "Harry Potter", "stock_count": 97 },
-    { "author": "Morgan Housel", "book_name": "Psychology of Money", "stock_count": 25 }
+    { "category": "fiction", "author": "JK Rowling", "book_name": "Harry Potter", "stock_count": 97 },
+    { "category": "fiction", "author": "Frank Hebert", "book_name": "Dune", "stock_count": 97},
+    { "category": "fiction", "author": "George Orwell", "book_name": "Animal Farm", "stock_count": 25 },
+    { "category": "non fiction","author": "Morgan Housel", "book_name": "Psychology of Money", "stock_count": 25 },
+    { "category": "non fiction","author": "James Clear", "book_name": "Atomic Habits", "stock_count": 25 },
+    { "category": "non fiction", "author": "Yuvan Noa Harari", "book_name": "Sapiens", "stock_count": 25}
 ]
 
-@app.get("/books")
+@app.get("/books/")
 async def get_books():
     return BOOKS
 
@@ -27,3 +32,16 @@ async def get_book(book_name: str):
             return book
 
     return { "error": "book not found", "book": book_name}
+
+
+@app.get("/books")
+async def get_books_by_category(category: Optional[str] = None):
+    if category is None:
+        return BOOKS
+
+    books = []
+    for book in BOOKS:
+        if(book.get("category").lower() == category):
+            books.append(book)
+
+    return books
